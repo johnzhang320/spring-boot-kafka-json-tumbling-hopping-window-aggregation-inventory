@@ -1,0 +1,1 @@
+# spring-boot-kafka-json-tumbling-hopping-window-aggregation-inventory
