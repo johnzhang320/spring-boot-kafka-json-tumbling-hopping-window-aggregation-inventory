@@ -13,9 +13,10 @@
   7. Again, it is supprised that we found change keys of event objects, first time call POST URL, tumbling window responses previous 
      fraud key's count, second time call same URL, tumbling window missed or partial missed the fraud count. But hopping window first 
      time to reflect real keys fraud alert
+     
+## Tumbling and Hopping Window Analysis
 
-
-## Detail Content and operation show below link
+## Detail Content and operation as below link
 
   [spring-boot kafka json tumbling & hopping window aggregation for inventory/](https://johnzhang320.com/spring-boot-kafka-json-tumbling-and-hopping-window-aggregation-for-inventory/)
  
