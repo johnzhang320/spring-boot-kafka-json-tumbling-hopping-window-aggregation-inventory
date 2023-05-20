@@ -21,6 +21,8 @@
  
   
  ## My Kafka Related Links
+ 
+  [spring-boot-kafka-json-stateful-aggregation/](https://johnzhang320.com/spring-boot-kafka-json-stateful-aggregation)
   
   [spring-boot kafka json stream/](https://johnzhang320.com/spring-boot-kafka-json-stream)
   
