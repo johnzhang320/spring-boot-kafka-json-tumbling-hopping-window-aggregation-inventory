@@ -18,10 +18,17 @@
 ## Detail Content and operation show below link
 
   [spring-boot kafka json tumbling & hopping window aggregation for inventory/](https://johnzhang320.com/spring-boot-kafka-json-tumbling-and-hopping-window-aggregation-for-inventory/)
-  
-## Related Links  
-  
  
+  
+ ## My Kafka Related Links
+  
+  [spring-boot kafka json stream/](https://johnzhang320.com/spring-boot-kafka-json-stream)
+  
+  [Spring boot connects to AWS EC2 Kafka docker container/](https://johnzhang320.com/kafka-aws-ec2-kafka-docker/)
+  
+  [Spring-boot kafka event driven/](https://johnzhang320.com/spring-boot-kafka-event-driven)
+ 
+  [Spring-boot kafka stream sorted unique word count/](https://johnzhang320.com/sorted-unique-word-count/)
  
   
    
