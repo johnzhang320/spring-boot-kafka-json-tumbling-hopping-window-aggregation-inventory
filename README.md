@@ -15,9 +15,12 @@
      time to reflect real keys fraud alert
 
 ## Time Windows Analysis
- 
+  We already know tumbling window size are fixed and each time go forward fixed side of window length, theoritcally  
 <img src="images/two-type-of-time-windows.png" width="80%" heigh="80%">
 
+## Detail Content and operation show below link
+
+https://johnzhang320.com/spring-boot-kafka-json-tumbling-and-hopping-window-aggregation-for-inventory/
   
    
 
