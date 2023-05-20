@@ -20,7 +20,8 @@
 
 ## Detail Content and operation show below link
 
-https://johnzhang320.com/spring-boot-kafka-json-tumbling-and-hopping-window-aggregation-for-inventory/
+  [spring-boot kafka json tumbling & hopping window aggregation for inventory/]([https://johnzhang320.com/spring-boot-kafka-json-stream](https://johnzhang320.com/spring-boot-kafka-json-tumbling-and-hopping-window-aggregation-for-inventory))
+ 
   
    
 
