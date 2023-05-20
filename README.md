@@ -14,13 +14,12 @@
      fraud key's count, second time call same URL, tumbling window missed or partial missed the fraud count. But hopping window first 
      time to reflect real keys fraud alert
 
-## Time Windows Analysis
-  We already know tumbling window size are fixed and each time go forward fixed side of window length, theoritcally  
-<img src="images/two-type-of-time-windows.png" width="80%" heigh="80%">
 
 ## Detail Content and operation show below link
 
   [spring-boot kafka json tumbling & hopping window aggregation for inventory/](https://johnzhang320.com/spring-boot-kafka-json-tumbling-and-hopping-window-aggregation-for-inventory/)
+  
+## Related Links  
   
  
  
