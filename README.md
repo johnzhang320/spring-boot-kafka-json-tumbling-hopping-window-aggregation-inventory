@@ -16,7 +16,7 @@
 
 ## Time Windows Analysis
  
-<img src="images/two-type-of-time-windows.png" width="70%" heigh="70%">
+<img src="images/two-type-of-time-windows.png" width="80%" heigh="80%">
 
   
    
