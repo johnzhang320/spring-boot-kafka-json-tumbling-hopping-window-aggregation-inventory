@@ -15,6 +15,8 @@
      time to reflect real keys fraud alert
 
 ## Time Windows Analysis
+ 
+<img src="images/two-type-of-time-windows.png" width="70%" heigh="70%">
 
   
    
