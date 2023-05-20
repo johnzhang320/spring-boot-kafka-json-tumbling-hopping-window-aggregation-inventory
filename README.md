@@ -15,6 +15,15 @@
      time to reflect real keys fraud alert
      
 ## Tumbling and Hopping Window Analysis
+ 
+### Tumbling Window
+
+   We already know tumbling window size are fixed and each time go forward fixed size of window length, it detects all events, here    
+    .....
+
+### Hopping Window
+
+   We know hopping window has the window size and advanced window size, window size is fixed and each time the window forward a.....
 
 ## Detail Content and operation as below link
 
