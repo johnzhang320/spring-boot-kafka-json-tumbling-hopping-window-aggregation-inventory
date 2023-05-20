@@ -25,7 +25,7 @@
 
    We know hopping window has the window size and advanced window size, window size is fixed and each time the window forward a.....
 
-## Detail Content and operation as below link
+## Detail Content diagram, system running, code analysis and running, testing data and result analysis as below link
 
   [spring-boot kafka json tumbling & hopping window aggregation for inventory/](https://johnzhang320.com/spring-boot-kafka-json-tumbling-and-hopping-window-aggregation-for-inventory/)
  
