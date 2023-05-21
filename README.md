@@ -50,48 +50,48 @@
    1. We set KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092, and expose 9092, in our code we alse use thus external same host
       as bootstrap-server because we find spring boot @Kafkalistener of consumer, not care boostrap-server configure, only point 
       localhost:9092, when I use localhost:29092, it issued "127.0.0.1:9092 Node -1, broker connection refused" error message
-   2. We needt set kafka network explicity name, here is "kafka_same_host_net", otherwise docker compose take current directory
+   2. We need set kafka network explicity name, here is "kafka_same_host_net", otherwise docker compose take current directory
       spring-boot-kafka-json-tumbling-hopping-window-aggregation-inventory-default as network name, when we start similiar docker-
       compose.yml in different diectory name, it complained spring-boot-kafka-json-tumbling-hopping-window-aggregation-inventory-
       default not found , refuse start 
    
-      version: '3'
-      services:
-        zookeeper:
-          image: confluentinc/cp-zookeeper:6.0.0
-          hostname: zookeeper
-          container_name: zookeeper
-          ports:
-            - "32181:32181"
-          environment:
-            ZOOKEEPER_CLIENT_PORT: 32181
-            ZOOKEEPER_TICK_TIME: 2000
-          networks:
-            - kafka_network
-        kafka:
-          image: confluentinc/cp-enterprise-kafka:6.0.0
-          hostname: kafka
-          container_name: kafka
-          depends_on:
-            - zookeeper
-          ports:
-            - "29092:29092"
-            - "9092:9092"
-          environment:
-            KAFKA_BROKER_ID: 1
-            KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:32181'
-            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-            KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_HOST://localhost:29092
-            KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-            KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-            KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-            KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-          networks:
-            - kafka_network
+            version: '3'
+            services:
+              zookeeper:
+                image: confluentinc/cp-zookeeper:6.0.0
+                hostname: zookeeper
+                container_name: zookeeper
+                ports:
+                  - "32181:32181"
+                environment:
+                  ZOOKEEPER_CLIENT_PORT: 32181
+                  ZOOKEEPER_TICK_TIME: 2000
+                networks:
+                  - kafka_network
+              kafka:
+                image: confluentinc/cp-enterprise-kafka:6.0.0
+                hostname: kafka
+                container_name: kafka
+                depends_on:
+                  - zookeeper
+                ports:
+                  - "29092:29092"
+                  - "9092:9092"
+                environment:
+                  KAFKA_BROKER_ID: 1
+                  KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:32181'
+                  KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+                  KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_HOST://localhost:29092
+                  KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+                  KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+                  KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+                  KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+                networks:
+                  - kafka_network
 
-      networks:
-        kafka_network:
-          name: kafka_same_host_net
+            networks:
+              kafka_network:
+                name: kafka_same_host_net
   
   
   
