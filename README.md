@@ -46,6 +46,15 @@
   
 ## docker-compose.yml
 
+   We need to enphase two points of docker-compose.yml, 
+   1. We set KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092, and expose 9092, in our code we alse use thus external same host
+      as bootstrap-server because we find spring boot @Kafkalistener of consumer, not care boostrap-server configure, only point 
+      localhost:9092, when I use localhost:29092, it issued "127.0.0.1:9092 Node -1, broker connection refused" error message
+   2. We needt set kafka network explicity name, here is "kafka_same_host_net", otherwise docker compose take current directory
+      spring-boot-kafka-json-tumbling-hopping-window-aggregation-inventory-default as network name, when we start similiar docker-
+      compose.yml in different diectory name, it complained spring-boot-kafka-json-tumbling-hopping-window-aggregation-inventory-
+      default not found , refuse start 
+   
       version: '3'
       services:
         zookeeper:
