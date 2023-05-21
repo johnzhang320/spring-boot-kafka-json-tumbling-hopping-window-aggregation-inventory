@@ -37,7 +37,7 @@
 
 ## Data Flow Chart
   
-  <img src="images/work-flow-chart.png" width="90%" height="90%">
+  <img src="images/work-flow-chart.png" width="80%" height="80%">
 
 ## Detail Topology for InventoryTransaction and Inventory Aggregation & Time Window 
 
