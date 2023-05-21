@@ -33,12 +33,12 @@
   tumbling window that forward window size.
   For same count of rejected transaction started at about middle (8 seconds) , it always was captured by hopping window
   
-  <img src="images/two-type-of-time-windows.png" width="90%" height="90%">
+  <img src="images/two-type-of-time-windows.png" width="80%" height="80%">
   
   
 ## Projects and Environments 
 
-  
+  <img src="images/project-structure-two-modules.png" width="35%" height="35%">
   
   
   
