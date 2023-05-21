@@ -18,14 +18,34 @@
  
 ### Tumbling Window
 
-   We already know tumbling window size are fixed and each time go forward fixed size of window length, it detects all events, here    
-    .....
+   We already know tumbling window size are fixed and each time go forward fixed size of window length, it detects all events, here 
+   we need tumbling window  capture all rejected transaction events if the count >=10 within 20 seconds, therefore if  say rejected 
+   events 17 times but across two windows,  first event might start at middle of tumbling window, 8 seconds for example,  even the 
+   count =17 and the count <20,  the event count meets fraud alert condition, tumbling window would not capture the count and would 
+   not report fraud alert
+
+
 
 ### Hopping Window
 
-   We know hopping window has the window size and advanced window size, window size is fixed and each time the window forward a
-   .....
+  We know hopping window has the window size and advanced window size, window size is fixed and each time the window forward 
+  advanced size. Advance Size is always smaller than window size.  From sampling theory, the sampling density is much more than 
+  tumbling window that forward window size.
+  For same count of rejected transaction started at about middle (8 seconds) , it always was captured by hopping window
+  
+  <img src="images/two-type-of-time-windows.png" width="90%" height="90%">
+  
+  
+## Projects and Environments 
 
+  
+  
+  
+  
+  
+  
+  
+  
 ## Detail information, diagrams, settings and running, code analysis, testing result analysis as below link
 
   [spring-boot kafka json tumbling & hopping window aggregation for inventory/](https://johnzhang320.com/spring-boot-kafka-json-tumbling-and-hopping-window-aggregation-for-inventory/)
