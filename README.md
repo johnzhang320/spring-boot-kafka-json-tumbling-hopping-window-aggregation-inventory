@@ -42,6 +42,7 @@
   processor. each modules are mostly same except the kstream processors. 
   Under main project directory (spring-boot-kafka-json-tumbling-hopping-window-aggregation-inventory), we have docker-compose.yml
   and restart.sh, run restart.sh to start docker-container 
+  
   <img src="images/project-structure-two-modules.png" width="35%" height="35%">
   
 ## docker-compose.yml
