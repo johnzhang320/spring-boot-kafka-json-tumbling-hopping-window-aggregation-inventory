@@ -34,7 +34,15 @@
   For same count of rejected transaction started at about middle (8 seconds) , it always was captured by hopping window
   
   <img src="images/two-type-of-time-windows.png" width="80%" height="80%">
+
+## Data Flow Chart
   
+  <img src="images/work-flow-chart.png" width="90%" height="90%">
+
+## Detail Topology for InventoryTransaction and Inventory Aggregation & Time Window 
+
+  <img src="images/topology-for-kstream-processor.png" width="90%" height="90%">
+ 
   
 ## System configuration and Settings 
 ## Project Structure
@@ -44,6 +52,9 @@
   and restart.sh, run restart.sh to start docker-container 
   
   <img src="images/project-structure-two-modules.png" width="35%" height="35%">
+  
+
+  
   
 ## docker-compose.yml
 
@@ -94,8 +105,40 @@
               kafka_network:
                 name: kafka_same_host_net
   
-  
-  
+## Data Modeling
+   
+### InventoryTransaction
+        @Data
+        @NoArgsConstructor
+        @AllArgsConstructor
+        @Builder
+        @ToString
+        public class InventoryTransaction {
+
+            private Long itemId;
+            private String itemName;
+            private Long quantity;
+            private BigDecimal price = BigDecimal.ZERO;
+            private Integer count;
+
+            @JsonFormat(shape = JsonFormat.Shape.STRING,
+                        pattern = "dd-MM-yyyy hh:mm:ss")
+            public Date time;
+            @Builder.Default
+            public InventoryTransactionState state = InventoryTransactionState.CREATED;
+
+            public TransactionRequestState transactionRequest;
+
+            public static enum InventoryTransactionState {
+                CREATED, APPROVED, REJECTED
+            }
+            public static enum TransactionRequestState {
+                ADD,SHIPPING
+            }
+        }
+
+    
+    
   
   
 ## Detail information, diagrams, settings and running, code analysis, testing result analysis as below link
