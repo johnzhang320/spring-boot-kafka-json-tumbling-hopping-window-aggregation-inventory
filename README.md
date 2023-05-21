@@ -36,11 +36,15 @@
   <img src="images/two-type-of-time-windows.png" width="80%" height="80%">
   
   
-## Projects and Environments 
-
+## System configuration and Settings 
+## Project Structure
+  We create one project container modules, one module contains hopping window kstream processor and another module is tumbling window
+  processor. each modules are mostly same except the kstream processors. 
+  Under main project directory (spring-boot-kafka-json-tumbling-hopping-window-aggregation-inventory), we have docker-compose.yml
+  and restart.sh, run restart.sh to start docker-container 
   <img src="images/project-structure-two-modules.png" width="35%" height="35%">
   
-  
+   
   
   
   
