@@ -10,9 +10,7 @@
      Tumbling windows first time still report last time key rejected count, second time it may miss or partial miss reject counts as 
      fraud even they meet fraud condition, However using exactly same transform with different window type, Hopping window first time 
      report fraud exactly if they meet fraud condition.
-  7. Again, it is supprised that we found change keys of event objects, first time call POST URL, tumbling window responses previous 
-     fraud key's count, second time call same URL, tumbling window missed or partial missed the fraud count. But hopping window first 
-     time to reflect real keys fraud aler
+ 
      
 ## Tumbling and Hopping Window Analysis
  
@@ -49,7 +47,7 @@
   
   <img src="images/project-structure-two-modules.png" width="35%" height="35%">
   
-
+    
   
   
 ## docker-compose.yml
@@ -258,7 +256,8 @@
 
 
                     rejectedTransactionStream
-                            .to(Constants.REJECTED_TRANSACTIONS, Produced.with(Serdes.Long(), InventoryTransactionSerdes.serdes()));
+                            .to(Constants.REJECTED_TRANSACTIONS, Produced.with(Serdes.Long(), 
+                            InventoryTransactionSerdes.serdes()));
 
                     Duration hoppingWindowSize = Duration.ofSeconds(20L);
                     Duration advanceWindowSize = Duration.ofSeconds(2L);
@@ -629,7 +628,19 @@
    even I changed the itemIds, It captured changed itemids meet fraud alert condition
    
    <img src="images/chang-itemid-from-155-to-158-start-hopping-window.png" width="90%" height="90%">  
-  
+   
+### You can test following URL to running 105 rejected transactions 
+ GET
+    http://localhost:8097/inventory/dataProducer
+    
+## Conclusion
+
+  Through testing and analysis, hopping Window are much stable to capture particular events than tumbling window, this project
+  privide USE CASE for Transaction Event real time stream tranform by time window based on the transaction aggregation, it may
+  be applied to password check or bank fraud check etc as my wish
+
+
+
 ## Detail information as below link
 
   [spring-boot kafka json tumbling & hopping window aggregation for inventory/](https://johnzhang320.com/spring-boot-kafka-json-tumbling-and-hopping-window-aggregation-for-inventory/)
