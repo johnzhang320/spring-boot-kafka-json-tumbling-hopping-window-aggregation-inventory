@@ -12,7 +12,7 @@
      report fraud exactly if they meet fraud condition.
   7. Again, it is supprised that we found change keys of event objects, first time call POST URL, tumbling window responses previous 
      fraud key's count, second time call same URL, tumbling window missed or partial missed the fraud count. But hopping window first 
-     time to reflect real keys fraud alert
+     time to reflect real keys fraud aler
      
 ## Tumbling and Hopping Window Analysis
  
@@ -108,6 +108,11 @@
 ## Data Modeling
    
 ### InventoryTransaction class
+    Two states need us pay attention. First state is TranscationRequestState, If add item to inventory call ADD and take away and 
+    ship to customer, call SHIPPING, second InventoryTransactionState, when create a transaction, state is CREATE, when aggregator
+    call "processTransaction" , if trnsaction is SHIPPING request state and inventory quantity is not enough, transaction will be 
+    "REJECT" state
+   
         @Data
         @NoArgsConstructor
         @AllArgsConstructor
@@ -140,6 +145,11 @@
     
 ### Inventory class
    
+  In inventory method processTransaction(), it sets current transaction to lastTransaction, and then check if transaction 
+  request state is SHIPPING and the quantity > inventory balance quantity then set the inventoryTransactionState as "REJECT"
+  if the quantity <= inventory quantity, then inventory quantity minus transaction quantity. if request state is ADD, add anyway
+  
+  
           @Data
           @AllArgsConstructor
           @Builder
@@ -191,9 +201,12 @@
                   this.latestTransaction = transaction;
               }
           }
+
+## Topology code , kstream processor
   
+
   
-## Detail information, diagrams, settings and running, code analysis, testing result analysis as below link
+## Detail information as below link
 
   [spring-boot kafka json tumbling & hopping window aggregation for inventory/](https://johnzhang320.com/spring-boot-kafka-json-tumbling-and-hopping-window-aggregation-for-inventory/)
  
