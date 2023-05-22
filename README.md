@@ -392,8 +392,9 @@
             
 ## Restful API and test data    
 
-   Below important point is that before we send bunch of inventoryTransaction, we make 1 second sleep, simulate send transaction once   
-   per second, means that we send more ten of transactions within 20 seconds , which expects to be captured by 20 second time window
+   Below important point is that before we send bunch of inventoryTransaction, we make 1 second sleep, simulate send 
+   transaction once per second, means that we send more ten of transactions within 20 seconds , which expects to be captured by 
+   20 second time window
    
                 @RestController
                 @RequestMapping("/inventory")
@@ -405,7 +406,8 @@
                     private final TestTimeWindowService testTimeWindowService;
                     
                     @PostMapping("/transaction")
-                    public InventoryTransaction InventoryTransaction(@RequestBody InventoryTransactionDto inventoryTransactionDto) {
+                    public InventoryTransaction InventoryTransaction(@RequestBody InventoryTransactionDto  
+                    inventoryTransactionDto) {
                         InventoryTransaction inventoryTransaction = 
                         inventoryTransactionService.toInventoryTransaction(inventoryTransactionDto);
                         sendInventoryTransaction.SendInventoryTransaction(inventoryTransaction);
@@ -618,9 +620,9 @@
 ### Tumbling Window missed or partially rejected transactions fraud alert when the count >=10  within 20 seconds
 
    Reproduce this case:
-   Run InventoryTransactionTumblingWinApp --> post http://localhost:8097/inventory/transactions and copy below data tp body --> waiting 
-   20 seconds--> itemId 145 was rejected 12 times and itemId 155 was rejected 11 times --> but tumbling window missed fraud alert at 
-   all as following 
+   Run InventoryTransactionTumblingWinApp --> post http://localhost:8097/inventory/transactions and copy below data tp body --> 
+   waiting 20 seconds--> itemId 145 was rejected 12 times and itemId 155 was rejected 11 times --> but tumbling window missed 
+   fraud alert completely as following 
    
    <img src="images/tumbling-window-miss-potential-fraud-alert.png" width="90%" height="90%">  
    
@@ -643,7 +645,7 @@
 ## Conclusion
 
   Through testing and analysis, hopping Window are much stable to capture particular events than tumbling window, this project
-  privide USE CASE for Transaction Event real time stream tranform by time window based on the transaction aggregation, it may
+  provide USE CASE for Transaction Event real time stream tranform by time window based on the transaction aggregation, it may
   be applied to password check or bank fraud check etc as my wish
 
 
