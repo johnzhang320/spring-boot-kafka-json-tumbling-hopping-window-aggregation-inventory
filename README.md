@@ -38,10 +38,6 @@
 ## Data Flow Chart
   
   <img src="images/work-flow-chart.png" width="80%" height="80%">
-
-## Detail Topology for InventoryTransaction and Inventory Aggregation & Time Window 
-
-  <img src="images/topology-for-kstream-processor.png" width="90%" height="90%">
  
   
 ## System configuration and Settings 
@@ -201,11 +197,115 @@
                   this.latestTransaction = transaction;
               }
           }
+          
+### Potential Fraud Alert Class
+        @Data
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public class PotentialFraudAlert {
+            private Long itemId;
+            private Long rejectedTransactionCount;
+            private String message;
+        }
 
-## Topology code , kstream processor
-  
 
+## Detail Topology of Aggregation & Time Window 
+
+  This part is core of this project. Basic logic is that consumed the transaction event stream, submitted the transaction to
+  inventory, filter the rejected transactions and sink to rejected topic, applied time window, within 20 seconds, if rejected 
+  transactions count>=10, create potential fraud alert objects and sink to fraud alert topic
   
+  Following is detail topology flow
+  
+  <img src="images/topology-for-kstream-processor.png" width="90%" height="90%">
+    
+### Topology code as following 
+  
+### Inventory Hopping window kstream process  
+
+            @EnableKafkaStreams
+            @EnableKafka
+            @Configuration
+            @Slf4j
+            public class InventoryHoppingWindowProcessor {
+
+                @Bean
+                @DependsOn(KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
+                public KStream<Long, Inventory> kStream(StreamsBuilder streamsBuilder) {
+
+
+                    KStream<Long, InventoryTransaction> inventoryTransactionKStream = 
+                    streamsBuilder.stream(Constants.INVENTORY_TRANSACTIONS,
+                            Consumed.with(Serdes.Long(), InventoryTransactionSerdes.serdes())
+                                    .withTimestampExtractor(new TransactionTimeExtractor()));
+
+
+                    KStream<Long, Inventory> inventoryKStream =
+                            inventoryTransactionKStream.groupByKey()
+                                    .aggregate(()->new Inventory(),
+                                            (key, value, aggregate) -> {
+                                                aggregate.processTransaction(value);
+                                                return aggregate;
+                                            },
+                                            Materialized.with(Serdes.Long(), InventorySerdes.serdes())
+                                    )
+                                    .toStream();
+    
+                    inventoryKStream.to(Constants.INVENTORY, Produced.with(Serdes.Long(), InventorySerdes.serdes()));
+
+                    KStream<Long, InventoryTransaction> rejectedTransactionStream = inventoryKStream
+                            .mapValues((readOnlyKey,value)->value.getLatestTransaction())
+                            .filter((kay,value)->value.state== InventoryTransaction.InventoryTransactionState.REJECTED);
+
+
+                    rejectedTransactionStream
+                            .to(Constants.REJECTED_TRANSACTIONS, Produced.with(Serdes.Long(), InventoryTransactionSerdes.serdes()));
+
+                    Duration hoppingWindowSize = Duration.ofSeconds(20L);
+                    Duration advanceWindowSize = Duration.ofSeconds(2L);
+                    rejectedTransactionStream
+                            .groupByKey()
+                            .windowedBy(TimeWindows.of(hoppingWindowSize).advanceBy(advanceWindowSize).grace(Duration.ofSeconds(0)))
+                            .count()
+                            .suppress(untilWindowCloses(unbounded()))
+                            .toStream()
+                            .map((key,value)-> KeyValue.pair(key.key(),value))
+                             .filter((key,value)->value>=10)
+                            .peek(((key,value)->log.info("Peek Within 20 seconds and rejected times>=10 ,Hopping Window captured 
+                            rejected inventory transactions as itemId {},  Count {}",key,value)))
+                            .mapValues((key,value)->new PotentialFraudAlert(key,value,String.format("Hopping Window captured Potential 
+                            Fraud Alerts as itemId %s Count %d",key,value)))
+                            .to(Constants.POTENTIAL_FRAUD_ALERT,Produced.with(Serdes.Long(), PotentialFraudAlertSerdes.serdes()));
+                    return inventoryKStream;
+                }
+            }
+  
+### Inventory Tumbling window kstream processor
+
+   
+   Ignore same parts as hopping window, only show time window code section as following 
+   
+   
+   ...........
+   
+                 Duration tumblingWindowSize = Duration.ofSeconds(20L);
+                rejectedTransactionStream
+                        .groupByKey()
+                        // tumbling window setting 20 second and grace means consider latency of system or network
+                        .windowedBy(TimeWindows.of(tumblingWindowSize).grace(Duration.ofSeconds(0)))
+                        .count()
+                        .suppress(untilWindowCloses(unbounded()))
+                        .toStream()
+                        .map((key,value)-> KeyValue.pair(key.key(),value))
+                        .filter((key,value)->value>=10)
+                        .peek(((key,value)->log.info("Within 20 seconds and rejected times>=10 ,Tumbling Window captured rejected 
+                        inventory transactions as itemId {},  Count {}",key,value)))
+                        .mapValues((key,value)->new PotentialFraudAlert(key,value,String.format("Within 20 seconds and rejected 
+                        times>=10, Tumbling Window captured rejected inventory transactions as itemId %s Count %d",key,value)))
+                        .to(Constants.POTENTIAL_FRAUD_ALERT,Produced.with(Serdes.Long(), PotentialFraudAlertSerdes.serdes()));
+
+              return inventoryKStream;
+          }
 ## Detail information as below link
 
   [spring-boot kafka json tumbling & hopping window aggregation for inventory/](https://johnzhang320.com/spring-boot-kafka-json-tumbling-and-hopping-window-aggregation-for-inventory/)
