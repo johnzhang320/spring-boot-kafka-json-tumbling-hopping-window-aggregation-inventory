@@ -98,6 +98,10 @@
             networks:
               kafka_network:
                 name: kafka_same_host_net
+                
+### Confluent Zookeeper and Kafka Docker Container
+
+  <img src="images/confluent-zookeeper-kafka-docker-container.png" width="80%" height="80%">
   
 ## Data Modeling
    
