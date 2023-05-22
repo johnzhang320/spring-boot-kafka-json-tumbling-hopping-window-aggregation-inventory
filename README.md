@@ -609,14 +609,26 @@
                    
 ## Test Result:
   
-### Tumbling Window missed count >=10 within 20 seconds
+### Tumbling Window missed or partially rejected transactions fraud alert when the count >=10  within 20 seconds
 
    Reproduce this case:
    Run InventoryTransactionTumblingWinApp --> post http://localhost:8097/inventory/transactions and copy below data tp body --> waiting 
-   20 seconds--> itemId 145 was rejected 12 times and itemId 155 was rejected 11 times --> but tumbling window missed as following 
+   20 seconds--> itemId 145 was rejected 12 times and itemId 155 was rejected 11 times --> but tumbling window missed fraud alert at 
+   all as following 
    
-   <img src="images/tumbling-window-only-capture-159-not-149-rejects.png" width="90%" height="90%">
+   <img src="tumbling-window-miss-potential-fraud-alert.png" width="90%" height="90%">  
    
+   Runing second time tumbling window captured item 159 and missed 149
+   
+   <img src="images/Tumbling-window-only-capture-159-not-149-rejects.png" width="90%" height="90%">
+   
+### Hopping Window correctly capture rejected transactions fraud alert at first time
+  
+   <img src="hopping-window-always-capture-10-more-rejects.png" width="90%" height="90%">  
+
+   even I changed the itemIds, It captured changed itemids meet fraud alert condition
+   
+   <img src="chang-itemid-from-155-to-158-start-hopping-window.png" width="90%" height="90%">  
   
 ## Detail information as below link
 
