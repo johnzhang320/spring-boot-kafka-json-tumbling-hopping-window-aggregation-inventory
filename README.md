@@ -616,7 +616,7 @@
    20 seconds--> itemId 145 was rejected 12 times and itemId 155 was rejected 11 times --> but tumbling window missed fraud alert at 
    all as following 
    
-   <img src="tumbling-window-miss-potential-fraud-alert.png" width="90%" height="90%">  
+   <img src="images/tumbling-window-miss-potential-fraud-alert.png" width="90%" height="90%">  
    
    Runing second time tumbling window captured item 159 and missed 149
    
@@ -624,11 +624,11 @@
    
 ### Hopping Window correctly capture rejected transactions fraud alert at first time
   
-   <img src="hopping-window-always-capture-10-more-rejects.png" width="90%" height="90%">  
+   <img src="images/hopping-window-always-capture-10-more-rejects.png" width="90%" height="90%">  
 
    even I changed the itemIds, It captured changed itemids meet fraud alert condition
    
-   <img src="chang-itemid-from-155-to-158-start-hopping-window.png" width="90%" height="90%">  
+   <img src="images/chang-itemid-from-155-to-158-start-hopping-window.png" width="90%" height="90%">  
   
 ## Detail information as below link
 
