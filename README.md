@@ -8,9 +8,9 @@
   6. Supported by Generic Json Serializer and Json Deserializer and Object Serdes, topology and spring boot use same objects 
      without other transform intermediate class such as Avro.
   7. Through many real data tests, we found some important point: when we setup time window to capture events withing 20 
-     seconds and rejected count>=10, then create potential fraud alert objects. When rejected events meet this condition, 
-     Tumbling Windows either totally not captured or partially captured "fraud" events first time running test data cause 
-     different result from next time running.
+     seconds and rejected count>=10 and send events per seconds, then create potential fraud alert objects. When rejected 
+     events meet this condition, Tumbling Windows either totally not captured or partially captured "fraud" events first time 
+     running test data, first time result may be different from next time result.
   8. However using exactly same transform with different window type, Hopping window first time report fraud exactly if they 
      meet fraud condition.
  
