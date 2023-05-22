@@ -444,7 +444,6 @@
    
    
               Postman test data
-
                 GET
                 http://localhost:8097/inventory/dataProducer
 
@@ -462,7 +461,7 @@
                        http://localhost:8097/inventory/transactions
                  Body
 
-  [
+              [
                      {
                          "itemId":145,
                          "itemName":"iWatch",
@@ -616,7 +615,7 @@
    Run InventoryTransactionTumblingWinApp --> post http://localhost:8097/inventory/transactions and copy below data tp body --> waiting 
    20 seconds--> itemId 145 was rejected 12 times and itemId 155 was rejected 11 times --> but tumbling window missed as following 
    
-   <img src="images/Tumbling-window-only-capture-159-not-149-rejects.png" width="90% height="90%">
+   <img src="images/tumbling-window-only-capture-159-not-149-rejects.png" width="90%" height="90%">
    
   
 ## Detail information as below link
