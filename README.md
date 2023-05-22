@@ -137,7 +137,6 @@
                 ADD,SHIPPING
             }
         }
-
     
 ### Inventory class
    
@@ -306,6 +305,320 @@
 
               return inventoryKStream;
           }
+  
+## Inventory Transaction Service for Restful API
+
+   We map inventoryTransactionDto to inventoryTransaction, here round 2 decimals of Double price wben convert Double to BigDecimal
+   price. 
+   
+              @Service
+              public class InventoryTransactionService {
+                  public InventoryTransaction toInventoryTransaction(InventoryTransactionDto inventoryTransactionDto) {
+                      InventoryTransaction.TransactionRequestState requestState;
+                      if (inventoryTransactionDto.requestState.equalsIgnoreCase("ADD")) {
+                          requestState = InventoryTransaction.TransactionRequestState.ADD;
+                      } else if (inventoryTransactionDto.requestState.equalsIgnoreCase("SHIPPING")) {
+                          requestState = InventoryTransaction.TransactionRequestState.SHIPPING;
+                      } else {
+                          throw new RuntimeException("must specify request state \"Add\" or \"SHOPPING\"");
+                      }
+                      if (inventoryTransactionDto.getPrice() == null) {
+                          throw new RuntimeException("Price is required!");
+                      }
+                      if (inventoryTransactionDto.getQuantity() == null) {
+                          throw new RuntimeException("Quantity is required!");
+                      }
+                      // keep two decimals only
+                      BigDecimal price = new BigDecimal(inventoryTransactionDto.getPrice());
+                      price = price.setScale(2, BigDecimal.ROUND_HALF_EVEN);
+                      InventoryTransaction InventoryTransaction = 
+                      com.kafka.inventory.time.window.aggregate.model.InventoryTransaction.builder()
+                              .itemId(inventoryTransactionDto.getItemId())
+                              .transactionRequest(requestState)
+                              .price(price)
+                              .quantity(Long.valueOf(inventoryTransactionDto.getQuantity()))
+                              .itemName(inventoryTransactionDto.getItemName())
+                              .time(new Date())
+                              .build();
+                      return InventoryTransaction;
+                  }
+              }
+              
+### InventoryTransactionDto 
+
+          @Data
+          @NoArgsConstructor
+          @AllArgsConstructor
+          @Builder
+          public class InventoryTransactionDto {
+              private Long itemId;
+              private String itemName;
+              private Long quantity;
+              private Double price;
+              public String requestState;
+          }
+          
+### Simulating 105 rejected transcation service
+
+            @Service
+            public class TestTimeWindowService {
+
+                public List<InventoryTransaction> testTumblingWindowFraud() {
+                    int times = 105; ;   //   105 times rejected Transactions
+                    BigDecimal price = new BigDecimal(239.99);
+                    price = price.setScale(2, BigDecimal.ROUND_HALF_EVEN);
+                    List<InventoryTransaction> list = new ArrayList<>();
+                    for (int i = 0; i<times;i++) {
+                        InventoryTransaction inventoryTransaction= InventoryTransaction.builder()
+                                .itemId(10021L)
+                                .count(i+1)
+                                .price(price)
+                                .transactionRequest(InventoryTransaction.TransactionRequestState.SHIPPING)
+                                .quantity((long) (2000+Math.random()*1000))
+                                .itemName("iWatch")
+                                .time(new Date())
+                                .build();
+                        list.add( inventoryTransaction);
+                    }
+                    return list;
+                }
+            }
+            
+## Restful API and test data    
+
+   Below important point is that before we send bunch of inventoryTransaction, we make 1 second sleep, simulate send transaction once   
+   per second, means that we send more ten of transactions within 20 seconds , which expects to be captured by 20 second time window
+   
+                @RestController
+                @RequestMapping("/inventory")
+                @RequiredArgsConstructor
+                public class TranscationController {
+
+                    private final SendInventoryTransaction sendInventoryTransaction;
+                    private final InventoryTransactionService inventoryTransactionService;
+                    private final TestTimeWindowService testTimeWindowService;
+                    
+                    @PostMapping("/transaction")
+                    public InventoryTransaction InventoryTransaction(@RequestBody InventoryTransactionDto inventoryTransactionDto) {
+                        InventoryTransaction inventoryTransaction = 
+                        inventoryTransactionService.toInventoryTransaction(inventoryTransactionDto);
+                        sendInventoryTransaction.SendInventoryTransaction(inventoryTransaction);
+                        return inventoryTransaction;
+                    }
+
+                    @PostMapping("/transactions")
+                    public List<InventoryTransactionDto> InventoryTransaction(@RequestBody List<InventoryTransactionDto> 
+                    inventoryTransactionDtos) {
+                        inventoryTransactionDtos.forEach(inventoryTransactionDto -> {
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                            }
+                            InventoryTransaction inventoryTransaction = 
+                            inventoryTransactionService.toInventoryTransaction(inventoryTransactionDto);
+                            sendInventoryTransaction.SendInventoryTransaction(inventoryTransaction);
+                        });
+                        return inventoryTransactionDtos;
+                    }
+
+                    @GetMapping("/potentialFraud")
+                    public List<InventoryTransaction> potentialFraud() {
+                        List<InventoryTransaction> inventoryTransactions = testTimeWindowService.testTumblingWindowFraud();
+                        inventoryTransactions.forEach(inventoryTransaction -> {
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {}
+
+                            sendInventoryTransaction.SendInventoryTransaction(inventoryTransaction);
+                          });
+                        return inventoryTransactions;
+                    }
+                }
+
+### TestData.txt
+
+   under main directory: spring-boot-kafka-json-tumbling-hopping-window-aggregation-inventory
+   we have TestData.text, can run about Rest API in Postman. http://localhost:8097/inventory/dataProducer
+   we call the simulating test to generate 105 rejected transaction, in http://localhost:8097/inventory/transactions
+   we post to hopping window and tumbling window to do comparison tests
+   
+   
+              Postman test data
+
+                GET
+                http://localhost:8097/inventory/dataProducer
+
+                POST
+                http://localhost:8097/inventory/transaction
+                {
+                    "itemId":100,
+                    "itemName":"iWatch",
+                    "price":250.0
+                    "quantity":1200,
+                    "requestState":"ADD"
+                 }
+
+                 POST
+                       http://localhost:8097/inventory/transactions
+                 Body
+
+  [
+                     {
+                         "itemId":145,
+                         "itemName":"iWatch",
+                         "quantity":40,
+                         "price":249.4,
+                         "requestState":"ADD"
+                      },
+                     {
+                        "itemId":145,
+                         "itemName":"iWatch",
+                         "price":240.0,
+                         "quantity":200,
+                         "requestState":"SHIPPING"
+                      },
+                      {
+                         "itemId":145,
+                         "itemName":"iWatch",
+                         "price":240.0,
+                         "quantity":45,
+                         "requestState":"SHIPPING"
+                     },
+                       {
+                         "itemId":145,
+                         "itemName":"iWatch",
+                         "price":240.0,
+                         "quantity":40,
+                         "requestState":"SHIPPING"
+                       },
+                        {
+                         "itemId":145,
+                         "itemName":"iWatch",
+                         "price":240.0,
+                         "quantity":50,
+                         "requestState":"ADD"
+                       },
+                        {
+                         "itemId":145,
+                         "itemName":"iWatch",
+                         "price":240.0,
+                         "quantity":40,
+                         "requestState":"SHIPPING"
+                       },
+                        {
+                         "itemId":145,
+                         "itemName":"iWatch",
+                         "price":240.0,
+                         "quantity":30,
+                         "requestState":"SHIPPING"
+                       },
+                        {
+                         "itemId":145,
+                         "itemName":"iWatch",
+                         "price":240.0,
+                         "quantity":140,
+                         "requestState":"SHIPPING"
+                       },
+                        {
+                         "itemId":145,
+                         "itemName":"iWatch",
+                         "price":240.0,
+                         "quantity":50,
+                         "requestState":"SHIPPING"
+                       },
+                        {
+                         "itemId":155,
+                         "itemName":"iPhone14",
+                         "price":1249.99,
+                         "quantity":100,
+                         "requestState":"SHIPPING"
+                       },
+                         {
+                         "itemId":155,
+                         "itemName":"iPhone14",
+                         "price":1249.99,
+                         "quantity":50,
+                         "requestState":"SHIPPING"
+                       }
+                       ,
+                         {
+                         "itemId":155,
+                         "itemName":"iPhone14",
+                         "price":1249.99,
+                         "quantity":102,
+                         "requestState":"SHIPPING"
+                       }
+                       ,
+                         {
+                         "itemId":155,
+                         "itemName":"iPhone14",
+                         "price":1249.99,
+                         "quantity":20,
+                         "requestState":"SHIPPING"
+                       },
+                         {
+                         "itemId":155,
+                         "itemName":"iPhone14",
+                         "price":1249.99,
+                         "quantity":110,
+                         "requestState":"SHIPPING"
+                       },
+                         {
+                         "itemId":155,
+                         "itemName":"iPhone14",
+                         "price":1249.99,
+                         "quantity":120,
+                         "requestState":"SHIPPING"
+                       },
+                         {
+                         "itemId":155,
+                         "itemName":"iPhone14",
+                         "price":1249.99,
+                         "quantity":80,
+                         "requestState":"SHIPPING"
+                       },
+                         {
+                         "itemId":155,
+                         "itemName":"iPhone14",
+                         "price":1249.99,
+                         "quantity":90,
+                         "requestState":"SHIPPING"
+                       },
+                         {
+                         "itemId":155,
+                         "itemName":"iPhone14",
+                         "price":1249.99,
+                         "quantity":122,
+                         "requestState":"SHIPPING"
+                       },
+                         {
+                         "itemId":155,
+                         "itemName":"iPhone14",
+                         "price":1249.99,
+                         "quantity":44,
+                         "requestState":"SHIPPING"
+                       }
+                       ,
+                         {
+                         "itemId":155,
+                         "itemName":"iPhone14",
+                         "price":1249.99,
+                         "quantity":55,
+                         "requestState":"SHIPPING"
+                       }
+                   ]
+                   
+## Test Result:
+  
+### Tumbling Window missed count >=10 within 20 seconds
+
+   Reproduce this case:
+   Run InventoryTransactionTumblingWinApp --> post http://localhost:8097/inventory/transactions and copy below data tp body --> waiting 
+   20 seconds--> itemId 145 was rejected 12 times and itemId 155 was rejected 11 times --> but tumbling window missed as following 
+   
+   <img src="images/Tumbling-window-only-capture-159-not-149-rejects.png" width="90% height="90%">
+   
+  
 ## Detail information as below link
 
   [spring-boot kafka json tumbling & hopping window aggregation for inventory/](https://johnzhang320.com/spring-boot-kafka-json-tumbling-and-hopping-window-aggregation-for-inventory/)
