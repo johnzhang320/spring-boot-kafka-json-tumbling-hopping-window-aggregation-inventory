@@ -88,7 +88,6 @@ public class InventoryTumblingWindowProcessor {
                       pay attend the peek with "Rejected Inventory Transactions >=10"
          */
         Duration tumblingWindowSize = Duration.ofSeconds(20L);
-
         rejectedTransactionStream
                 .groupByKey()
                 // tumbling window setting 20 second and grace means consider latency of system or network

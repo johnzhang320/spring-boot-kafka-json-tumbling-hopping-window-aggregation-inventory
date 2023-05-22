@@ -11,7 +11,7 @@ import java.util.List;
 public class TestTimeWindowService {
 
     public List<InventoryTransaction> testTumblingWindowFraud() {
-        int times = 28; //(int) (20+Math.random()*10);   //   28 times rejected Transactions
+        int times = 105; ;   //   105 times rejected Transactions
         BigDecimal price = new BigDecimal(239.99);
         price = price.setScale(2, BigDecimal.ROUND_HALF_EVEN);
         List<InventoryTransaction> list = new ArrayList<>();

@@ -19,5 +19,4 @@ public class InventoryTransactionDto {
     private Long quantity;
     private Double price;
     public String requestState;
-
 }
