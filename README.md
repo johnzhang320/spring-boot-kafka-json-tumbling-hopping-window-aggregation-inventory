@@ -21,10 +21,8 @@
 
    We already know tumbling window size are fixed and each time go forward fixed size of window length, it detects all events, here 
    we need tumbling window  capture all rejected transaction events if the count >=10 within 20 seconds, therefore if  say rejected 
-   events 17 times and send event once per second but, those event could across two tumbling windows,  first event might start near middle of tumbling window, say happend at 8 seconds after tumbling window started,  even the 
-   count =17 and the count <20,  the event count meets fraud alert condition, tumbling window would not capture the count and would 
-   not report fraud alert
-
+   events 17 times and send one event once per second but those events could across two tumbling windows,  first event might start near middle of tumbling window, say first event happened at 8 seconds after tumbling window started, even the 
+   count > 10 within 20 seconds, count of those events meets fraud alert condition, tumbling window would not capture the count and would capture and not report fraud alert because 17 events across two tumbling window, each window did not get 10 more events
 
 
 ### Hopping Window
